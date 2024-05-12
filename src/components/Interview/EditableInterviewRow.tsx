@@ -72,7 +72,7 @@ const EditableInterviewRow: React.FC<EditableInterviewRowProps> = ({
   };
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !(event.target as Node).contains(dropdownRef.current)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
     };
