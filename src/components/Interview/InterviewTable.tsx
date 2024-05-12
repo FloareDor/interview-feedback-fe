@@ -28,13 +28,23 @@ const InterviewTable: React.FC<InterviewTableProps> = ({ pageId }) => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
+      console.log(response.data);
       setInterviews(response.data);
     };
+
     fetchInterviews();
   }, [pageId]);
 
+  const updateInterview = (updatedInterview: Interview) => {
+    setInterviews((prevInterviews) =>
+      prevInterviews.map((interview) =>
+        interview.id === updatedInterview.id ? updatedInterview : interview
+      )
+    );
+  };
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       <div className="bg-white shadow-md rounded my-6">
         <table className="min-w-max w-full table-auto">
           <thead>
@@ -47,7 +57,11 @@ const InterviewTable: React.FC<InterviewTableProps> = ({ pageId }) => {
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
             {interviews.map((interview) => (
-              <InterviewRow key={interview.id} interview={interview} />
+              <InterviewRow
+                key={interview.id}
+                interview={interview}
+                updateInterview={updateInterview}
+              />
             ))}
           </tbody>
         </table>
