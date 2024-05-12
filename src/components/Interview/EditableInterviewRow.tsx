@@ -3,6 +3,7 @@ import axios from 'axios';
 import RatingStars from './RatingStars';
 import deleteIcon from '../../../public/images/delete.svg'
 import Image from 'next/image';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
@@ -16,15 +17,31 @@ interface Interview {
   rating: number;
 }
 
-interface InterviewRowProps {
-  interview: Interview;
+interface EditableInterviewRowProps {
+  interview?: Interview;
   updateInterview: (updatedInterview: Interview) => void;
-  deleteInterview: (interviewId: number) => void; // The deleteInterview prop is used here
+  addInterview: (newInterview: Interview) => void;
+  deleteInterview: (interviewId: number) => void;
+  pageId: string | null;
 }
 
-const InterviewRow: React.FC<InterviewRowProps> = ({ interview, updateInterview, deleteInterview }) => {
-  const [editedInterview, setEditedInterview] = useState<Interview>(interview);
-  const [isEditing, setIsEditing] = useState(false);
+const EditableInterviewRow: React.FC<EditableInterviewRowProps> = ({
+  interview,
+  updateInterview,
+  addInterview,
+  deleteInterview,
+  pageId,
+}) => {
+  const [editedInterview, setEditedInterview] = useState<Interview>(
+    interview || {
+      id: 0,
+      interviewee_name: '',
+      status: '',
+      feedback: '',
+      rating: 0,
+    }
+  );
+  const [isEditing, setIsEditing] = useState(!interview);
 
   const handleFieldChange = (field: keyof Interview, value: string | number) => {
     setEditedInterview((prevInterview) => ({
@@ -36,17 +53,56 @@ const InterviewRow: React.FC<InterviewRowProps> = ({ interview, updateInterview,
   const handleUpdateInterview = async () => {
     try {
       const accessToken = localStorage.getItem('accessToken');
-      const response = await axios.put(`${backendUrl}/update-interview`, editedInterview, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      console.log(response.data);
-      updateInterview(editedInterview);
+      if (interview) {
+        const response = await axios.put(`${backendUrl}/update-interview`, editedInterview, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        console.log(response.data);
+        updateInterview(editedInterview);
+      } else {
+        const response = await axios.post(
+          `${backendUrl}/add-interview`,
+          {
+            page_id: pageId,
+            ...editedInterview,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        console.log(response.data);
+        addInterview(response.data);
+        setEditedInterview({
+          id: 0,
+          interviewee_name: '',
+          status: '',
+          feedback: '',
+          rating: 0,
+        });
+      }
       setIsEditing(false);
     } catch (error) {
-      console.error('Error updating interview:', error);
+      console.error('Error updating/adding interview:', error);
     }
+  };
+
+  const handleCancelEdit = () => {
+    setEditedInterview(interview || {
+      id: 0,
+      interviewee_name: '',
+      status: '',
+      feedback: '',
+      rating: 0,
+    });
+    setIsEditing(false);
+  };
+
+  const handleDoubleClick = () => {
+    setIsEditing(true);
   };
 
   const handleDeleteInterview = async () => {
@@ -57,23 +113,16 @@ const InterviewRow: React.FC<InterviewRowProps> = ({ interview, updateInterview,
           Authorization: `Bearer ${accessToken}`,
         },
         data: {
-          id: interview.id,
+          id: interview?.id,
         },
       });
       console.log(response.data);
-      deleteInterview(interview.id); // Call the deleteInterview function passed as a prop
+      if (interview) {
+        deleteInterview(interview.id); // Call the deleteInterview function passed as a prop
+      }
     } catch (error) {
       console.error('Error deleting interview:', error);
     }
-  };
-
-  const handleCancelEdit = () => {
-    setEditedInterview(interview);
-    setIsEditing(false);
-  };
-
-  const handleDoubleClick = () => {
-    setIsEditing(true);
   };
 
   return (
@@ -124,28 +173,28 @@ const InterviewRow: React.FC<InterviewRowProps> = ({ interview, updateInterview,
           <>
             <button
               onClick={handleUpdateInterview}
-              className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded mr-2"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
             >
-              Save
+              {interview ? 'Save' : 'Add'}
             </button>
             <button
               onClick={handleCancelEdit}
-              className="bg-red-500 hover:bg-red-700 text-white text-sm font-bold py-2 px-4 rounded mr-2"
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             >
               Cancel
             </button>
           </>
-        ) : (
-          <button
-          onClick={handleDeleteInterview}
-          className="bg-transparent text-red-500 hover:text-red-700 text-sm font-bold py-1 px-2 rounded"
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
-        )}
+      ) : interview ? (
+        <button
+        onClick={handleDeleteInterview}
+        className="bg-transparent text-red-500 hover:text-red-700 text-sm font-bold py-1 px-2 rounded"
+      >
+        <FontAwesomeIcon icon={faTrash} />
+      </button>
+      ) : null}
       </td>
     </tr>
   );
 };
 
-export default InterviewRow;
+export default EditableInterviewRow;

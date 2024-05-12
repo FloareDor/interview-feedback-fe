@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import InterviewRow from './InterviewRow';
-import AddInterviewRow from './AddInterviewRow';
+import EditableInterviewRow from './EditableInterviewRow';
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -43,29 +42,47 @@ const InterviewTable: React.FC<InterviewTableProps> = ({ pageId }) => {
     );
   };
 
+  const deleteInterview = (interviewId: number) => {
+    setInterviews((prevInterviews) =>
+      prevInterviews.filter((interview) => interview.id !== interviewId)
+    );
+  };
+
+  const addInterview = (newInterview: Interview) => {
+    setInterviews((prevInterviews) => [...prevInterviews, newInterview]);
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       <div className="bg-white shadow-md rounded my-6">
         <table className="min-w-max w-full table-auto">
           <thead>
-            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+            <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">Name</th>
-              <th className="py-3 px-6 text-left">Interview Status</th>
-              <th className="py-3 px-6 text-left">Interview Feedback</th>
+              <th className="py-3 px-6 text-left">Status</th>
+              <th className="py-3 px-6 text-left">Feedback</th>
               <th className="py-3 px-6 text-left">Rating</th>
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
             {interviews.map((interview) => (
-              <InterviewRow
+              <EditableInterviewRow
                 key={interview.id}
                 interview={interview}
                 updateInterview={updateInterview}
+                addInterview={addInterview}
+                deleteInterview={deleteInterview}
+                pageId={pageId}
               />
             ))}
+            <EditableInterviewRow
+              updateInterview={updateInterview}
+              addInterview={addInterview}
+              deleteInterview={deleteInterview}
+              pageId={pageId}
+            />
           </tbody>
         </table>
-        <AddInterviewRow pageId={pageId} setInterviews={setInterviews} />
       </div>
     </div>
   );
