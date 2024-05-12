@@ -8,7 +8,7 @@ const InterviewPage: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const pageId = String(id) ? String(id as string) : null;
+  const pageId = String(id) ? String(id as string) : "interview1";
 
   return (
     <div>

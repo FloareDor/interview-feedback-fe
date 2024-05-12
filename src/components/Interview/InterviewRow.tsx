@@ -26,7 +26,7 @@ const InterviewRow: React.FC<InterviewRowProps> = ({ interview, updateInterview,
   const [editedInterview, setEditedInterview] = useState<Interview>(interview);
   const [isEditing, setIsEditing] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   const statusOptions = ['Pending', 'Active', 'Done'];
 
@@ -57,7 +57,7 @@ const InterviewRow: React.FC<InterviewRowProps> = ({ interview, updateInterview,
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !(event.target as Node).contains(dropdownRef.current)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
     };

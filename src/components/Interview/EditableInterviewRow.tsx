@@ -21,7 +21,7 @@ interface EditableInterviewRowProps {
   updateInterview: (updatedInterview: Interview) => void;
   addInterview: (newInterview: Interview) => void;
   deleteInterview: (interviewId: number) => void;
-  pageId: string | null;
+  pageId: string | "interview1";
 }
 
 const EditableInterviewRow: React.FC<EditableInterviewRowProps> = ({
@@ -42,7 +42,8 @@ const EditableInterviewRow: React.FC<EditableInterviewRowProps> = ({
   );
   const [isEditing, setIsEditing] = useState(!interview);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  // const dropdownRef = useRef(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   const statusOptions = ['Pending', 'Active', 'Completed'];
 
