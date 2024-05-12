@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import RatingStars from './RatingStars';
-import deleteIcon from '../../../public/images/delete.svg'
+import deleteIcon from '../../../public/images/delete.svg';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faCaretDown, faEdit } from '@fortawesome/free-solid-svg-icons';
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -19,19 +19,57 @@ interface Interview {
 interface InterviewRowProps {
   interview: Interview;
   updateInterview: (updatedInterview: Interview) => void;
-  deleteInterview: (interviewId: number) => void; // The deleteInterview prop is used here
+  deleteInterview: (interviewId: number) => void;
 }
 
 const InterviewRow: React.FC<InterviewRowProps> = ({ interview, updateInterview, deleteInterview }) => {
   const [editedInterview, setEditedInterview] = useState<Interview>(interview);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const statusOptions = ['Pending', 'Active', 'Done'];
 
   const handleFieldChange = (field: keyof Interview, value: string | number) => {
-    setEditedInterview((prevInterview) => ({
-      ...prevInterview,
-      [field]: value,
-    }));
+    if (field === 'status') {
+      setEditedInterview((prevInterview) => ({
+        ...prevInterview,
+        [field]: value.toString(),
+      }));
+    } else {
+      setEditedInterview((prevInterview) => ({
+        ...prevInterview,
+        [field]: value,
+      }));
+    }
   };
+
+  const toggleDropdown = () => {
+    if (!isDropdownOpen) {
+      setIsDropdownOpen(true);
+    }
+  };
+  
+  const handleOptionSelect = (option: string) => {
+    handleFieldChange('status', option);
+    setIsDropdownOpen(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+  
+    if (isEditing) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+  
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isEditing]);
 
   const handleUpdateInterview = async () => {
     try {
@@ -61,7 +99,7 @@ const InterviewRow: React.FC<InterviewRowProps> = ({ interview, updateInterview,
         },
       });
       console.log(response.data);
-      deleteInterview(interview.id); // Call the deleteInterview function passed as a prop
+      deleteInterview(interview.id);
     } catch (error) {
       console.error('Error deleting interview:', error);
     }
@@ -87,18 +125,44 @@ const InterviewRow: React.FC<InterviewRowProps> = ({ interview, updateInterview,
           className="bg-transparent"
         />
       </td>
-      <td className="py-3 px-6 text-left">
-        <input
-          type="text"
-          value={editedInterview.status}
-          onChange={(e) => handleFieldChange('status', e.target.value)}
-          readOnly={!isEditing}
-          className={`py-1 px-3 rounded-full text-xs ${
-            editedInterview.status.toLowerCase() === 'pending'
-              ? 'bg-yellow-200 text-yellow-600'
-              : 'bg-green-200 text-green-600'
-          }`}
-        />
+      <td className="py-3 px-6 text-left relative">
+        <div ref={dropdownRef} className="relative">
+          <button
+            type="button"
+            className={`py-1 px-3 rounded-full text-xs flex items-center justify-between ${
+              editedInterview.status.toLowerCase() === 'pending'
+                ? 'bg-yellow-200 text-yellow-600'
+                : 'bg-green-200 text-green-600'
+            }`}
+            onClick={toggleDropdown}
+            disabled={!isEditing}
+          >
+            {editedInterview.status}
+            <FontAwesomeIcon icon={faCaretDown} className="ml-2" />
+          </button>
+          {isDropdownOpen && (
+  <div
+    className="absolute z-10 bg-white shadow-md rounded-md mt-2 transition duration-300 ease-in-out transform origin-top"
+    style={{
+      transform: isDropdownOpen ? 'scaleY(1) opacity(1)' : 'scaleY(0) opacity(0)',
+    }}
+  >
+    {statusOptions.map((option) => (
+      <button
+        key={option}
+        className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
+          option === editedInterview.status ? 'bg-gray-200 font-semibold' : ''
+        }`}
+        onClick={() => handleOptionSelect(option)}
+        onDoubleClick={handleDoubleClick}
+        
+      >
+        {option}
+      </button>
+    ))}
+  </div>
+)}
+        </div>
       </td>
       <td className="py-3 px-6 text-left">
         <input
@@ -137,11 +201,11 @@ const InterviewRow: React.FC<InterviewRowProps> = ({ interview, updateInterview,
           </>
         ) : (
           <button
-          onClick={handleDeleteInterview}
-          className="bg-transparent text-red-500 hover:text-red-700 text-sm font-bold py-1 px-2 rounded"
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
+            onClick={handleDeleteInterview}
+            className="bg-transparent text-red-500 hover:text-red-700 text-sm font-bold py-1 px-2 rounded"
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
         )}
       </td>
     </tr>
