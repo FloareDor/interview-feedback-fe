@@ -5,8 +5,8 @@ import Navbar from '@/components/Navbar/Navbar';
 const InterviewPage: React.FC = () => {
   return (
 	  <div>
-	<Navbar/>
-      <InterviewTable />
+	  <Navbar/>
+      <InterviewTable pageId={"0"} />
     </div>
   );
 };

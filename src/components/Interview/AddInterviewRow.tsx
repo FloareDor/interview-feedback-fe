@@ -4,7 +4,7 @@ import axios from 'axios';
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface AddInterviewRowProps {
-  pageId: number;
+  pageId: string | null;
   setInterviews: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
@@ -19,7 +19,6 @@ const AddInterviewRow: React.FC<AddInterviewRowProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const accessToken = localStorage.getItem('accessToken');
     const response = await axios.post(
       `${backendUrl}/add-interview`,
@@ -36,7 +35,6 @@ const AddInterviewRow: React.FC<AddInterviewRowProps> = ({
         },
       }
     );
-
     setInterviews((prevInterviews) => [...prevInterviews, response.data]);
     setIntervieweeName('');
     setStatus('');

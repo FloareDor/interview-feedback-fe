@@ -13,9 +13,12 @@ interface Interview {
   rating: number;
 }
 
-const InterviewTable: React.FC = () => {
+interface InterviewTableProps {
+  pageId: string;
+}
+
+const InterviewTable: React.FC<InterviewTableProps> = ({ pageId }) => {
   const [interviews, setInterviews] = useState<Interview[]>([]);
-  const [pageId, setPageId] = useState<number>(1); // Default page ID
 
   useEffect(() => {
     const fetchInterviews = async () => {
@@ -27,7 +30,6 @@ const InterviewTable: React.FC = () => {
       });
       setInterviews(response.data);
     };
-
     fetchInterviews();
   }, [pageId]);
 
