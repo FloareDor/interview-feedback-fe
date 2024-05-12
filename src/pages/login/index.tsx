@@ -1,4 +1,5 @@
 import LoginForm from "@/components/Auth/Login/LoginForm"
+import Link from "next/link";
 
 const Login = () => {
 	return (
@@ -9,9 +10,9 @@ const Login = () => {
 			</h2>
 			<p className="mt-2 text-center text-sm text-gray-600 max-w">
 				Or{' '}
-				<a href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+				<Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
 				create a new account
-				</a>
+				</Link>
 			</p>
 			</div>
 			
