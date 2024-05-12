@@ -38,12 +38,10 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
 
-    if (isEditing) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
 
     return cleanup;
-  }, [isEditing]);
+  }, []);
 
   return (
     <div ref={dropdownRef} className="relative">
