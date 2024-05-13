@@ -8,6 +8,9 @@ const RatingStars: React.FC<RatingStarsProps> = ({ rating }) => {
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= rating; i++) {
+      if (i === 5) {
+        break;
+      }
       stars.push(
         <span
           key={i}
