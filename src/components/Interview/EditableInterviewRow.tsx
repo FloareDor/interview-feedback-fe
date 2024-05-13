@@ -43,10 +43,18 @@ const EditableInterviewRow: React.FC<EditableInterviewRowProps> = ({
   const [isEditing, setIsEditing] = useState(!interview);
 
   const handleFieldChange = (field: keyof Interview, value: string | number) => {
-    setEditedInterview((prevInterview) => ({
-      ...prevInterview,
-      [field]: value,
-    }));
+    if (field === 'rating') {
+      const cappedValue = Math.min(Number(value), 5);
+      setEditedInterview((prevInterview) => ({
+        ...prevInterview,
+        [field]: cappedValue,
+      }));
+    } else {
+      setEditedInterview((prevInterview) => ({
+        ...prevInterview,
+        [field]: value,
+      }));
+    }
   };
 
   const handleUpdateInterview = async () => {
