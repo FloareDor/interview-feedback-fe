@@ -8,7 +8,6 @@ import EditingActions from './EditingActions';
 import StatusDropdown from '../UI/StatusDropdown';
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
 interface Interview {
   id: number;
   interviewee_name: string;
