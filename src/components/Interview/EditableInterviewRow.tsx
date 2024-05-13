@@ -131,12 +131,14 @@ const EditableInterviewRow: React.FC<EditableInterviewRowProps> = ({
   return (
     <tr className="border-b border-gray-200 hover:bg-gray-100">
       <td className="py-3 px-6 text-left whitespace-nowrap">
+
         <input
           type="text"
           value={editedInterview.interviewee_name}
           onChange={(e) => handleFieldChange('interviewee_name', e.target.value)}
           readOnly={!isEditing}
           className="bg-transparent"
+          onDoubleClick={() => setIsEditing(true)}
         />
       </td>
       <StatusDropdown
@@ -151,6 +153,7 @@ const EditableInterviewRow: React.FC<EditableInterviewRowProps> = ({
           onChange={(e) => handleFieldChange('feedback', e.target.value)}
           readOnly={!isEditing}
           className="bg-transparent"
+          onDoubleClick={() => setIsEditing(true)}
         />
       </td>
       <td className="py-3 px-6 text-left flex items-center">
@@ -160,6 +163,7 @@ const EditableInterviewRow: React.FC<EditableInterviewRowProps> = ({
           onChange={(e) => handleFieldChange('rating', Number(e.target.value))}
           readOnly={!isEditing}
           className="bg-transparent w-16 mr-2"
+          onDoubleClick={() => setIsEditing(true)}
         />
         <RatingStars rating={editedInterview.rating} />
       </td>
