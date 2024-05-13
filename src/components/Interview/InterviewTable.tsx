@@ -59,9 +59,9 @@ const InterviewTable: React.FC<InterviewTableProps> = ({ pageId }) => {
           <thead>
             <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">Name</th>
-              <th className="py-3 px-6 text-left">Status (/5)</th>
+              <th className="py-3 px-6 text-left">Status</th>
               <th className="py-3 px-6 text-left">Feedback</th>
-              <th className="py-3 px-6 text-left">Rating</th>
+              <th className="py-3 px-6 text-left">Rating (/5)</th>
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
